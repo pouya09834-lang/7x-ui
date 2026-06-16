@@ -347,15 +347,30 @@ func (s *ClientService) Update(inboundSvc *InboundService, id int, updated model
 			reverseStr = string(b)
 		}
 	}
-	if err := database.GetDB().Model(&model.ClientRecord{}).
-		Where("id = ?", id).
-		Update("reverse", reverseStr).Error; err != nil {
-		return needRestart, err
+
+	trafficRatio := updated.TrafficRatio
+	if trafficRatio <= 0 {
+		trafficRatio = 1.0
 	}
 
 	if err := database.GetDB().Model(&model.ClientRecord{}).
 		Where("id = ?", id).
-		UpdateColumn("updated_at", time.Now().UnixMilli()).Error; err != nil {
+		Updates(map[string]interface{}{
+			"sub_id":        updated.SubID,
+			"flow":          updated.Flow,
+			"security":      updated.Security,
+			"limit_ip":      updated.LimitIP,
+			"total_gb":      updated.TotalGB,
+			"expiry_time":   updated.ExpiryTime,
+			"enable":        updated.Enable,
+			"tg_id":         updated.TgID,
+			"group_name":    updated.Group,
+			"comment":       updated.Comment,
+			"reset":         updated.Reset,
+			"traffic_ratio": trafficRatio,
+			"reverse":       reverseStr,
+			"updated_at":    time.Now().UnixMilli(),
+		}).Error; err != nil {
 		return needRestart, err
 	}
 	return needRestart, nil
