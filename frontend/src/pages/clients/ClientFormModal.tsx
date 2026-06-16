@@ -415,6 +415,7 @@ export default function ClientFormModal({
       delayedStart: form.delayedStart,
       delayedDays: form.delayedDays,
       reset: form.reset,
+      trafficRatio: form.trafficRatio,
       limitIp: form.limitIp,
       tgId: form.tgId,
       group: form.group,
